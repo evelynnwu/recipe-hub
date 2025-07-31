@@ -1,21 +1,20 @@
 import requests
 from bs4 import BeautifulSoup
-from google import genai
 from dotenv import load_dotenv
 from recipe_scrapers import scrape_html
 
 load_dotenv()
-client = genai.Client()
+def parse_recipe(url):
+    try:
+        html_text = requests.get(url).text
+        scraper = scrape_html(html_text, org_url=url)
+        return {
+            'title': scraper.title(),
+            'ingredients': scraper.ingredients(),
+            'instructions': scraper.instructions(),
+            'prep_time': scraper.total_time(),
+            'success': True
+        }
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
 
-response = client.models.generate_content(
-    model="gemini-2.5-flash", contents="Explain how AI works in a few words"
-)
-print(response.text)
-
-URL = "https://www.allrecipes.com/recipe/158968/spinach-and-feta-turkey-burgers/"
-page = requests.get(URL).text
-
-scraper = scrape_html(page, org_url=URL)
-print(scraper.title())
-print(scraper.instructions())
-print(scraper.ingredients())
