@@ -13,6 +13,7 @@ def parse_recipe(url):
             'ingredients': scraper.ingredients(),
             'instructions': scraper.instructions(),
             'prep_time': scraper.total_time(),
+            'image': scraper.image(),
             'success': True
         }
     except Exception as e:
