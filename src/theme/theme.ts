@@ -13,19 +13,11 @@ export const theme = createTheme({
     },
     h3: {
       fontFamily: '"Inter", sans-serif',
-      fontWeight: 600,
+      fontWeight: 500,
     },
     h4: {
       fontFamily: '"Inter", sans-serif',
-      fontWeight: 600,
-    },
-    h5: {
-      fontFamily: '"Inter", sans-serif',
-      fontWeight: 500,
-    },
-    h6: {
-      fontFamily: '"Inter", sans-serif',
-      fontWeight: 500,
+      fontWeight: 400,
     },
     body1: {
       fontFamily: '"Inter", sans-serif',

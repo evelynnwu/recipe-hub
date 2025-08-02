@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles';
 export default function RecipeCard({ recipe }) {
   const theme = useTheme();
   return (
-    <Card sx={{ maxWidth: 345, margin: 2, backgroundColor: theme.palette.primary.light }}>
+    <Card sx={{ width: 345, height: 300, margin: 2, backgroundColor: theme.palette.primary.light }}>
       <CardMedia
         component="img"
         height="140"
@@ -13,7 +13,7 @@ export default function RecipeCard({ recipe }) {
         alt={recipe.title}
       />
       <CardContent>
-        <Typography gutterBottom variant="h5" component="div" align="left" sx={{
+        <Typography gutterBottom variant="h6" fontSize="20px" component="div" align="left" sx={{
             fontFamily: theme.typography.h1.fontFamily,
             color: "#000000",
           }}>
