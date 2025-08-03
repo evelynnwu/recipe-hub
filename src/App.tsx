@@ -3,6 +3,7 @@ import './App.css'
 import RecipeCard from './components/RecipeCard'
 import { Container, Box, TextField, Button, Alert, Grid, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
+import { usePersistedRecipes } from './hooks/usePersistedRecipes'
 
 interface Recipe {
   title: string;
@@ -18,7 +19,7 @@ interface Recipe {
 function App() {
   const [url, setUrl] = useState('')
   const [parsedRecipe, setParsedRecipe] = useState<Recipe | null>(null)
-  const [savedRecipes, setSavedRecipes] = useState<Recipe[]>([])
+  const [savedRecipes, setSavedRecipes] = usePersistedRecipes()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const theme = useTheme()
@@ -129,7 +130,7 @@ function App() {
       {savedRecipes.length > 0 && (
         <Grid container spacing={3}>
           {savedRecipes.map((recipe) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={recipe.id}>
+            <Grid size={{xs: 12, sm: 6, md: 4, lg: 3}} key={recipe.id}>
               <RecipeCard recipe={recipe} />
             </Grid>
           ))}

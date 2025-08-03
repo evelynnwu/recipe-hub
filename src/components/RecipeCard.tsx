@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Card, CardContent, CardMedia, Typography, CardActions, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
-export default function RecipeCard({ recipe }) {
+export default function RecipeCard({ recipe }: { recipe: Recipe}) {
   const theme = useTheme();
   return (
     <Card sx={{ width: 345, height: 300, margin: 2, backgroundColor: theme.palette.primary.light }}>
