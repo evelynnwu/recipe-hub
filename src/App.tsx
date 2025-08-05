@@ -4,17 +4,7 @@ import RecipeCard from './components/RecipeCard'
 import { Container, Box, TextField, Button, Alert, Grid, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { usePersistedRecipes } from './hooks/usePersistedRecipes'
-
-interface Recipe {
-  title: string;
-  ingredients: string[];
-  instructions: string;
-  prep_time: string;
-  cook_time?: string;
-  image?: string;
-  success: boolean;
-  id?: string;
-}
+import type { Recipe } from './types/Recipe';
 
 function App() {
   const [url, setUrl] = useState('')

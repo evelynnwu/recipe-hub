@@ -1,16 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { loadRecipesFromStorage, saveRecipesToStorage } from '../utils/recipeStorage';
-
-interface Recipe {
-  title: string;
-  ingredients: string[];
-  instructions: string;
-  prep_time: string;
-  cook_time?: string;
-  image?: string;
-  success: boolean;
-  id?: string;
-}
+import type { Recipe } from '../types/Recipe';
 
 export const usePersistedRecipes = () => {
   const [recipes, setRecipes] = useState<Recipe[]>(() => {

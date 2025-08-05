@@ -1,12 +1,4 @@
-interface Recipe {
-  title: string;
-  ingredients: string[];
-  instructions: string;
-  prep_time: integer;
-  image?: string;
-  success: boolean;
-  id?: string;
-}
+import type { Recipe } from '../types/Recipe';
 
 const STORAGE_KEY = 'recipe-hub-saved-recipes';
 

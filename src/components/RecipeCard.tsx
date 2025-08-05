@@ -1,6 +1,6 @@
-import * as React from 'react';
 import { Card, CardContent, CardMedia, Typography, CardActions, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import type { Recipe } from '../types/Recipe';
 
 export default function RecipeCard({ recipe }: { recipe: Recipe}) {
   const theme = useTheme();
