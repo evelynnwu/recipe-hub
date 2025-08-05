@@ -33,7 +33,7 @@ function App() {
     setParsedRecipe(null)
 
     try {
-      const response = await fetch('http://localhost:5000/api/parse', {
+      const response = await fetch('https://recipe-hub-8anv.onrender.com/api/parse', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
