@@ -8,7 +8,7 @@ import { usePersistedRecipes } from './hooks/usePersistedRecipes'
 interface Recipe {
   title: string;
   ingredients: string[];
-  instructions: string[];
+  instructions: string;
   prep_time: string;
   cook_time?: string;
   image?: string;
