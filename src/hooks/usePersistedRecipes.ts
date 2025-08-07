@@ -13,14 +13,16 @@ export const usePersistedRecipes = () => {
 
   const setValue = useCallback((value: Recipe[] | ((prevValue: Recipe[]) => Recipe[])) => {
     try {
-      const valueToStore = value instanceof Function ? value(recipes) : value;
-      console.log('Setting recipes:', valueToStore);
-      setRecipes(valueToStore);
-      saveRecipesToStorage(valueToStore);
+      setRecipes(prevRecipes => {
+        const valueToStore = value instanceof Function ? value(prevRecipes) : value;
+        console.log('Setting recipes:', valueToStore);
+        saveRecipesToStorage(valueToStore);
+        return valueToStore;
+      });
     } catch (error) {
       console.error('Error setting recipes:', error);
     }
-  }, [recipes]);
+  }, []);
 
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {

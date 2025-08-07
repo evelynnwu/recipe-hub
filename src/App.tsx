@@ -10,7 +10,7 @@ import { RecipeGrid } from './components/ui/feature-section-with-grid'
 function App() {
   const [url, setUrl] = useState('')
   const [parsedRecipe, setParsedRecipe] = useState<Recipe | null>(null)
-  const [, setSavedRecipes] = usePersistedRecipes()
+  const [savedRecipes, setSavedRecipes] = usePersistedRecipes()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const theme = useTheme()
@@ -118,7 +118,7 @@ function App() {
       )}
 
       {/* Recipe Grid */}
-      <RecipeGrid />
+      <RecipeGrid recipes={savedRecipes} onDeleteRecipe={(id) => setSavedRecipes(prev => prev.filter(r => r.id !== id))} />
     </Container>
   )
 }

@@ -1,12 +1,12 @@
 import { Badge } from "@/components/ui/badge";
-import { usePersistedRecipes } from "@/hooks/usePersistedRecipes";
+import type { Recipe } from "@/types/Recipe";
 
-function RecipeGrid() {
-  const [recipes, setRecipes] = usePersistedRecipes();
+interface RecipeGridProps {
+  recipes: Recipe[];
+  onDeleteRecipe: (id: string) => void;
+}
 
-  const handleDeleteRecipe = (recipeId: string) => {
-    setRecipes(prev => prev.filter(recipe => recipe.id !== recipeId));
-  };
+function RecipeGrid({ recipes, onDeleteRecipe }: RecipeGridProps) {
 
   return (
     <div className="w-full py-20 lg:py-40">
@@ -63,8 +63,8 @@ function RecipeGrid() {
                   
                   {recipe.id && (
                     <button
-                      onClick={() => handleDeleteRecipe(recipe.id!)}
-                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => onDeleteRecipe(recipe.id!)}
+                      className="absolute top-2 right-2 hover:bg-gray text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-20 transition-opacity"
                       aria-label="Delete recipe"
                     >
                       ×
