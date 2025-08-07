@@ -2,15 +2,21 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      nodejs: 20
+    commands:
+      # Force Node.js 20 using the pre-installed 'n' package
+      - n 20.14.0
+      - node --version
+      - npm --version
   pre_build:
     commands:
       - echo Build started on `date`
       - echo Installing dependencies...
       # Fix npm optional dependencies bug
       - rm -rf node_modules package-lock.json || true
+      - npm cache clean --force || true
       - npm install
+      # Force install rollup native binary if still missing
+      - npm install @rollup/rollup-linux-x64-gnu --force || true
   build:
     commands:
       - echo Build started on `date`
