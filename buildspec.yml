@@ -2,9 +2,9 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      nodejs: 20  # This is the proper way to set Node version in CodeBuild
     commands:
-      # Force Node.js 20 using the pre-installed 'n' package
-      - n 20.14.0
       - node --version
       - npm --version
   pre_build:
@@ -13,11 +13,7 @@ phases:
       - echo Installing dependencies...
       # Fix npm optional dependencies bug
       - rm -rf node_modules package-lock.json || true
-      - npm cache clean --force
-      - npm cache verify
-      - npm install
-      # Force install rollup native binary if still missing
-      - npm install @rollup/rollup-linux-x64-gnu --force || true
+      - npm ci
   build:
     commands:
       - echo Build started on `date`
