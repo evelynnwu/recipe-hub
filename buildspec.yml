@@ -1,9 +1,11 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      nodejs: 20
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
       - echo Build started on `date`
       - echo Installing dependencies...
       # Fix npm optional dependencies bug
