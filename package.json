@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:docker": "docker compose -f docker-compose.build.yml up --build",
+    "build:test": "docker run --rm -v ${PWD}:/app -w /app node:18-alpine sh -c 'npm ci && npm run build'",
     "lint": "eslint .",
     "preview": "vite preview"
   },

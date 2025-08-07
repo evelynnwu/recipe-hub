@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  build-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.build
+    volumes:
+      - ./dist:/app/dist
+    environment:
+      - NODE_ENV=production
+    command: npm run build
