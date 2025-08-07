@@ -13,7 +13,8 @@ phases:
       - echo Installing dependencies...
       # Fix npm optional dependencies bug
       - rm -rf node_modules package-lock.json || true
-      - npm cache clean --force || true
+      - npm cache clean --force
+      - npm cache verify
       - npm install
       # Force install rollup native binary if still missing
       - npm install @rollup/rollup-linux-x64-gnu --force || true
