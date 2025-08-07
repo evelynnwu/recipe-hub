@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import './App.css'
 import RecipeCard from './components/RecipeCard'
-import { Container, Box, TextField, Button, Alert, Grid, Typography } from '@mui/material'
+import { Container, Box, TextField, Button, Alert, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { usePersistedRecipes } from './hooks/usePersistedRecipes'
 import type { Recipe } from './types/Recipe';
+import { RecipeGrid } from './components/ui/feature-section-with-grid'
 
 function App() {
   const [url, setUrl] = useState('')
@@ -117,15 +118,7 @@ function App() {
       )}
 
       {/* Recipe Grid */}
-      {savedRecipes.length > 0 && (
-        <Grid container spacing={3}>
-          {savedRecipes.map((recipe) => (
-            <Grid size={{xs: 12, sm: 6, md: 4, lg: 3}} key={recipe.id}>
-              <RecipeCard recipe={recipe} />
-            </Grid>
-          ))}
-        </Grid>
-      )}
+      <RecipeGrid recipes={savedRecipes} />
     </Container>
   )
 }

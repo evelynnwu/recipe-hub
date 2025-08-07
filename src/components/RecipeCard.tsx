@@ -2,8 +2,15 @@ import { Card, CardContent, CardMedia, Typography, CardActions, Button } from '@
 import { useTheme } from '@mui/material/styles';
 import type { Recipe } from '../types/Recipe';
 
-export default function RecipeCard({ recipe }: { recipe: Recipe}) {
+export default function RecipeCard({ recipe, onDelete }: { recipe: Recipe; onDelete?: (id: string) => void }) {
   const theme = useTheme();
+  
+  const handleDelete = () => {
+    if (onDelete && recipe.id) {
+      onDelete(recipe.id);
+    }
+  };
+
   return (
     <Card sx={{ width: 345, height: 300, margin: 2, backgroundColor: theme.palette.primary.light }}>
       <CardMedia
@@ -24,7 +31,7 @@ export default function RecipeCard({ recipe }: { recipe: Recipe}) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" sx={{color: "#000000"}}>Edit</Button>
+        {onDelete && <Button size="small" onClick={handleDelete} sx={{color: "#000000"}}>Delete</Button>}
         <Button size="small" sx={{color: "#000000"}}>View Recipe</Button>
       </CardActions>
     </Card>
