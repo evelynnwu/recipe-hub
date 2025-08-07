@@ -1,16 +1,11 @@
 import { Badge } from "@/components/ui/badge";
-import type { Recipe } from "@/types/Recipe";
 import { usePersistedRecipes } from "@/hooks/usePersistedRecipes";
 
-interface RecipeGridProps {
-  recipes: Recipe[];
-}
-
-function RecipeGrid({ recipes }: RecipeGridProps) {
-  const [, setSavedRecipes] = usePersistedRecipes();
+function RecipeGrid() {
+  const [recipes, setRecipes] = usePersistedRecipes();
 
   const handleDeleteRecipe = (recipeId: string) => {
-    setSavedRecipes(prev => prev.filter(recipe => recipe.id !== recipeId));
+    setRecipes(prev => prev.filter(recipe => recipe.id !== recipeId));
   };
 
   return (
