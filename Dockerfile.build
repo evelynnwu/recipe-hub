@@ -1,5 +1,5 @@
-# Use the same Node version as AWS CodeBuild
-FROM node:18-alpine
+# Use Node 20 LTS (non-alpine for better module resolution)
+FROM node:20
 
 # Set working directory
 WORKDIR /app
@@ -8,10 +8,16 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies (will install Linux-compatible versions)
-RUN npm ci --only=production=false
+RUN npm ci
+# Force install rollup native binaries for Linux
+RUN npm install @rollup/rollup-linux-x64-gnu --force
 
-# Copy source code
-COPY . .
+# Copy source code (excluding node_modules)
+COPY src/ ./src/
+COPY public/ ./public/
+COPY *.config.* ./
+COPY tsconfig*.json ./
+COPY index.html ./
 
 # Build the application
 RUN npm run build
