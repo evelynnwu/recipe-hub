@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:docker": "docker compose -f docker-compose.build.yml up --build",
-    "build:test": "docker run --rm -v ${PWD}:/app -w /app node:18-alpine sh -c 'npm ci && npm run build'",
+    "build:test": "docker run --rm -v ${PWD}:/app -w /app node:20 sh -c 'npm ci && npm run build'",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -15,11 +15,13 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.2.0",
+    "@supabase/supabase-js": "2.54.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "zod": "4.0.16"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

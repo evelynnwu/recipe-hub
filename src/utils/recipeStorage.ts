@@ -1,18 +1,7 @@
 import type { Recipe } from '../types/Recipe';
+import { isValidRecipe } from '../types/Recipe';
 
 const STORAGE_KEY = 'recipe-hub-saved-recipes';
-
-const isValidRecipe = (recipe: any): recipe is Recipe => {
-  return (
-    recipe &&
-    typeof recipe === 'object' &&
-    typeof recipe.title === 'string' &&
-    Array.isArray(recipe.ingredients) &&
-    typeof recipe.instructions === 'string' &&
-    typeof recipe.prep_time === 'number' &&
-    typeof recipe.success === 'boolean'
-  );
-};
 
 export const loadRecipesFromStorage = (): Recipe[] => {
   try {

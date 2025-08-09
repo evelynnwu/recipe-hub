@@ -1,26 +1,35 @@
 import { useState } from 'react'
 import './App.css'
 import RecipeCard from './components/RecipeCard'
-import { Container, Box, TextField, Button, Alert, Typography } from '@mui/material'
+import { Container, Box, TextField, Button, Alert, Typography, CircularProgress } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
-import { usePersistedRecipes } from './hooks/usePersistedRecipes'
+import { useRecipes } from './hooks/useRecipes'
 import type { Recipe } from './types/Recipe';
+import { validateRecipe } from './types/Recipe';
 import { RecipeGrid } from './components/ui/feature-section-with-grid'
 
 function App() {
   const [url, setUrl] = useState('')
   const [parsedRecipe, setParsedRecipe] = useState<Recipe | null>(null)
-  const [savedRecipes, setSavedRecipes] = usePersistedRecipes()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [parseLoading, setParseLoading] = useState(false)
+  const [parseError, setParseError] = useState('')
   const theme = useTheme()
+
+  // Use the new recipes hook with database support
+  const { 
+    recipes: savedRecipes, 
+    loading: recipesLoading, 
+    error: recipesError, 
+    addRecipe, 
+    deleteRecipe 
+  } = useRecipes(true) // true = use database
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!url.trim()) return
 
-    setLoading(true)
-    setError('')
+    setParseLoading(true)
+    setParseError('')
     setParsedRecipe(null)
 
     try {
@@ -35,22 +44,37 @@ function App() {
       const data = await response.json()
       
       if (data.success) {
-        setParsedRecipe({ ...data, id: Date.now().toString() })
-        setUrl('')
+        // Validate the parsed recipe with Zod
+        try {
+          const validatedRecipe = validateRecipe({ 
+            ...data, 
+            id: Date.now().toString() 
+          })
+          setParsedRecipe(validatedRecipe)
+          setUrl('')
+        } catch (validationError) {
+          console.error('Recipe validation failed:', validationError)
+          setParseError('Received invalid recipe data from server')
+        }
       } else {
-        setError(data.error || 'Failed to parse recipe')
+        setParseError(data.error || 'Failed to parse recipe')
       }
     } catch (err) {
-      setError('Failed to connect to server')
+      setParseError('Failed to connect to server')
     } finally {
-      setLoading(false)
+      setParseLoading(false)
     }
   }
 
-  const handleSaveRecipe = () => {
+  const handleSaveRecipe = async () => {
     if (parsedRecipe) {
-      setSavedRecipes(prev => [...prev, parsedRecipe])
-      setParsedRecipe(null)
+      try {
+        await addRecipe(parsedRecipe)
+        setParsedRecipe(null)
+      } catch (error) {
+        console.error('Failed to save recipe:', error)
+        setParseError('Failed to save recipe to database')
+      }
     }
   }
 
@@ -68,14 +92,14 @@ function App() {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Enter recipe URL here..."
-            disabled={loading}
+            disabled={parseLoading}
             variant="outlined"
             size="small"
           />
           <Button
             type="submit"
             variant="contained"
-            disabled={loading || !url.trim()}
+            disabled={parseLoading || !url.trim()}
             sx={{ 
               minWidth: 120,
               backgroundColor: theme.palette.secondary.main,
@@ -84,16 +108,30 @@ function App() {
               }
             }}
           >
-            {loading ? 'Parsing...' : 'Parse'}
+            {parseLoading ? 'Parsing...' : 'Parse'}
           </Button>
         </Box>
       </Box>
 
       {/* Error Display */}
-      {error && (
+      {parseError && (
         <Alert severity="error" sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}>
-          {error}
+          {parseError}
         </Alert>
+      )}
+      
+      {/* Database Error Display */}
+      {recipesError && (
+        <Alert severity="warning" sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}>
+          {recipesError}
+        </Alert>
+      )}
+
+      {/* Loading Indicator */}
+      {recipesLoading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+          <CircularProgress />
+        </Box>
       )}
 
       {/* Parsed Recipe Preview with Save Button */}
@@ -118,7 +156,10 @@ function App() {
       )}
 
       {/* Recipe Grid */}
-      <RecipeGrid recipes={savedRecipes} onDeleteRecipe={(id) => setSavedRecipes(prev => prev.filter(r => r.id !== id))} />
+      <RecipeGrid 
+        recipes={savedRecipes} 
+        onDeleteRecipe={(id) => deleteRecipe(id)} 
+      />
     </Container>
   )
 }
