@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 from recipe_scrapers import scrape_html
 import json
 import logging
@@ -26,7 +26,9 @@ def parse():
         if not url:
             return jsonify({"success": False, "error": "URL is required"}), 400
 
-        html = urlopen(url).read().decode("utf-8")
+        # Add User-Agent header to avoid 403 errors
+        req = Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'})
+        html = urlopen(req).read().decode("utf-8")
         scraper = scrape_html(html, org_url=url)
         recipe_data = json.loads(scraper.to_json())
         
