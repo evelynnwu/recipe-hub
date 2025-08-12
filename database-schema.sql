@@ -4,6 +4,7 @@
 -- Create recipes table
 CREATE TABLE IF NOT EXISTS recipes (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   title VARCHAR NOT NULL,
   ingredients JSONB NOT NULL,
   instructions TEXT NOT NULL,
@@ -41,46 +42,20 @@ END $$;
 -- Enable Row Level Security (RLS)
 ALTER TABLE recipes ENABLE ROW LEVEL SECURITY;
 
--- Create policies only if they don't exist
-DO $$ 
-BEGIN
-    -- Check and create SELECT policy
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_policies 
-        WHERE tablename = 'recipes' AND policyname = 'Anyone can view recipes'
-    ) THEN
-        CREATE POLICY "Anyone can view recipes" ON recipes 
-            FOR SELECT USING (true);
-    END IF;
+-- Create new user-specific policies
+CREATE POLICY "Users can view own recipes" ON recipes 
+    FOR SELECT USING (auth.uid() = user_id);
 
-    -- Check and create INSERT policy
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_policies 
-        WHERE tablename = 'recipes' AND policyname = 'Anyone can insert recipes'
-    ) THEN
-        CREATE POLICY "Anyone can insert recipes" ON recipes 
-            FOR INSERT WITH CHECK (true);
-    END IF;
+CREATE POLICY "Users can insert own recipes" ON recipes 
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-    -- Check and create UPDATE policy
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_policies 
-        WHERE tablename = 'recipes' AND policyname = 'Anyone can update recipes'
-    ) THEN
-        CREATE POLICY "Anyone can update recipes" ON recipes 
-            FOR UPDATE USING (true);
-    END IF;
+CREATE POLICY "Users can update own recipes" ON recipes 
+    FOR UPDATE USING (auth.uid() = user_id);
 
-    -- Check and create DELETE policy
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_policies 
-        WHERE tablename = 'recipes' AND policyname = 'Anyone can delete recipes'
-    ) THEN
-        CREATE POLICY "Anyone can delete recipes" ON recipes 
-            FOR DELETE USING (true);
-    END IF;
-END $$;
+CREATE POLICY "Users can delete own recipes" ON recipes 
+    FOR DELETE USING (auth.uid() = user_id);
 
 -- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_recipes_user_id ON recipes(user_id);
 CREATE INDEX IF NOT EXISTS idx_recipes_created_at ON recipes(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_recipes_title ON recipes USING GIN (to_tsvector('english', title));

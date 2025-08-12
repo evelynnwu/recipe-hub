@@ -1,19 +1,23 @@
 import { useState } from 'react'
 import './App.css'
 import RecipeCard from './components/RecipeCard'
-import { Container, Box, TextField, Button, Alert, Typography, CircularProgress } from '@mui/material'
+import { Container, Box, TextField, Button, Alert, Typography, CircularProgress, AppBar, Toolbar } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { useRecipes } from './hooks/useRecipes'
 import type { Recipe } from './types/Recipe';
 import { validateRecipe } from './types/Recipe';
 import { RecipeGrid } from './components/ui/feature-section-with-grid'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { LoginForm } from './components/auth/LoginForm'
+import { UserProfile } from './components/auth/UserProfile'
 
-function App() {
+const RecipeApp: React.FC = () => {
   const [url, setUrl] = useState('')
   const [parsedRecipe, setParsedRecipe] = useState<Recipe | null>(null)
   const [parseLoading, setParseLoading] = useState(false)
   const [parseError, setParseError] = useState('')
   const theme = useTheme()
+  const { user, loading: authLoading } = useAuth()
 
   // Use the new recipes hook with database support
   const { 
@@ -80,11 +84,30 @@ function App() {
     }
   }
 
+  if (authLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  if (!user) {
+    return <LoginForm />
+  }
+
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Typography variant="h3" component="h1" align="center" gutterBottom sx={{ mb: 4 }}>
-        Recipe Hub
-      </Typography>
+    <>
+      <AppBar position="static" sx={{ backgroundColor: theme.palette.primary.main, mb: 4 }}>
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Recipe Hub
+          </Typography>
+          <UserProfile />
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth="xl" sx={{ py: 4 }}>
 
       {/* Compact Parse Form */}
       <Box component="form" onSubmit={handleSubmit} sx={{ mb: 4 }}>
@@ -167,7 +190,16 @@ function App() {
         recipes={savedRecipes} 
         onDeleteRecipe={(id) => deleteRecipe(id)} 
       />
-    </Container>
+      </Container>
+    </>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <RecipeApp />
+    </AuthProvider>
   )
 }
 

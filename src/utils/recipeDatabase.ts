@@ -6,11 +6,12 @@ import {RecipeSchema, validateRecipe} from '../types/Recipe';
 const RECIPES_TABLE = 'recipes';
 
 // Transform recipe for database storage
-const transformRecipeForDB = (recipe: Recipe) => {
+const transformRecipeForDB = (recipe: Recipe, userId: string) => {
   // Validate recipe before sending to database
   const validatedRecipe = validateRecipe(recipe);
   
   return {
+    user_id: userId,
     title: validatedRecipe.title,
     ingredients: validatedRecipe.ingredients, // Supabase handles JSON automatically
     instructions: validatedRecipe.instructions,
@@ -47,9 +48,16 @@ const transformRecipeFromDB = (dbRecipe: any): Recipe => {
 
 export const loadRecipesFromDatabase = async (): Promise<Recipe[]> => {
   try {
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
     const { data, error } = await supabase
       .from(RECIPES_TABLE)
       .select('*')
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -78,7 +86,13 @@ export const loadRecipesFromDatabase = async (): Promise<Recipe[]> => {
 
 export const saveRecipeToDatabase = async (recipe: Recipe): Promise<Recipe> => {
   try {
-    const recipeData = transformRecipeForDB(recipe);
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    const recipeData = transformRecipeForDB(recipe, user.id);
     
     const { data, error } = await supabase
       .from(RECIPES_TABLE)
@@ -104,6 +118,12 @@ export const saveRecipeToDatabase = async (recipe: Recipe): Promise<Recipe> => {
 
 export const updateRecipeInDatabase = async (id: string, recipe: Partial<Recipe>): Promise<Recipe> => {
   try {
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
     // Validate the partial recipe data
     const partialSchema = RecipeSchema.partial();
     const validatedPartial = partialSchema.parse(recipe);
@@ -112,6 +132,7 @@ export const updateRecipeInDatabase = async (id: string, recipe: Partial<Recipe>
       .from(RECIPES_TABLE)
       .update(validatedPartial)
       .eq('id', id)
+      .eq('user_id', user.id)
       .select()
       .single();
 
@@ -121,7 +142,7 @@ export const updateRecipeInDatabase = async (id: string, recipe: Partial<Recipe>
     }
 
     if (!data) {
-      throw new Error('Recipe not found');
+      throw new Error('Recipe not found or access denied');
     }
 
     return transformRecipeFromDB(data);
@@ -133,10 +154,17 @@ export const updateRecipeInDatabase = async (id: string, recipe: Partial<Recipe>
 
 export const deleteRecipeFromDatabase = async (id: string): Promise<void> => {
   try {
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
     const { error } = await supabase
       .from(RECIPES_TABLE)
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('Error deleting recipe from database:', error);
@@ -150,15 +178,22 @@ export const deleteRecipeFromDatabase = async (id: string): Promise<void> => {
 
 export const getRecipeById = async (id: string): Promise<Recipe | null> => {
   try {
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
     const { data, error } = await supabase
       .from(RECIPES_TABLE)
       .select('*')
       .eq('id', id)
+      .eq('user_id', user.id)
       .single();
 
     if (error) {
       if (error.code === 'PGRST116') {
-        return null; // Recipe not found
+        return null; // Recipe not found or access denied
       }
       console.error('Error getting recipe by ID:', error);
       throw new Error(`Database error: ${error.message}`);
