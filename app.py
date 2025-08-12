@@ -1,9 +1,16 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from recipe_scrapers import scrape_me
+from urllib.request import urlopen
+from recipe_scrapers import scrape_html
+import json
+import logging
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React frontend
+
+# Enable detailed logging
+logging.basicConfig(level=logging.DEBUG)
+app.logger.setLevel(logging.DEBUG)
 
 @app.route('/api/health', methods=['GET'])
 def health():
@@ -11,14 +18,28 @@ def health():
 
 @app.route('/api/parse', methods=['POST'])
 def parse():
-    data = request.get_json()
-    url = data.get('url')
-    
-    if not url:
-        return jsonify({"success": False, "error": "URL is required"}), 400
-    
-    scraper = scrape_me(url)
-    return scraper.to_json()
+    try:
+        data = request.get_json()
+        url = data.get('url')
+        app.logger.info(f"Parsing URL: {url}")
+        
+        if not url:
+            return jsonify({"success": False, "error": "URL is required"}), 400
+
+        html = urlopen(url).read().decode("utf-8")
+        scraper = scrape_html(html, org_url=url)
+        recipe_data = json.loads(scraper.to_json())
+        
+        app.logger.info(f"Successfully parsed recipe: {recipe_data.get('title', 'No title')}")
+        return jsonify({
+            **recipe_data,
+            'success': True
+        })
+        
+    except Exception as e:
+        error_msg = f"Error parsing recipe: {str(e)}"
+        app.logger.error(error_msg)
+        return jsonify({"success": False, "error": error_msg}), 500
 
 
 if __name__ == '__main__':
