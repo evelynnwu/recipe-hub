@@ -6,11 +6,11 @@ export const RecipeSchema = z.object({
   title: z.string().min(1, "Title is required"),
   ingredients: z.array(z.string().min(1, "Ingredient cannot be empty")).min(1, "At least one ingredient is required"),
   instructions: z.string().min(1, "Instructions are required"),
-  prep_time: z.number().positive("Prep time must be positive"),
-  cook_time: z.string().optional(),
+  prep_time: z.union([z.number(), z.string().transform(Number)]).optional(),
+  cook_time: z.union([z.number(), z.string().transform(Number)]).optional(),
   image: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   success: z.boolean().default(true)
-});
+}).passthrough(); // Allow extra fields to pass through
 
 // Infer TypeScript type from Zod schema
 export type Recipe = z.infer<typeof RecipeSchema>;
