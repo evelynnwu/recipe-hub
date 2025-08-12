@@ -30,13 +30,14 @@ def parse():
         req = Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'})
         html = urlopen(req).read().decode("utf-8")
         scraper = scrape_html(html, org_url=url)
-        recipe_data = json.loads(scraper.to_json())
+        recipe_json = scraper.to_json()  # This is already a JSON string
+        recipe_data = json.loads(recipe_json)  # Convert to dict for logging only
         
         app.logger.info(f"Successfully parsed recipe: {recipe_data.get('title', 'No title')}")
-        return jsonify({
-            **recipe_data,
-            'success': True
-        })
+        
+        # Add success field to the dict and return as JSON
+        recipe_data['success'] = True
+        return recipe_data
         
     except Exception as e:
         error_msg = f"Error parsing recipe: {str(e)}"
