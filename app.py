@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 from urllib.request import urlopen, Request
 from recipe_scrapers import scrape_html
@@ -31,13 +31,11 @@ def parse():
         html = urlopen(req).read().decode("utf-8")
         scraper = scrape_html(html, org_url=url)
         recipe_json = scraper.to_json()  # This is already a JSON string
-        recipe_data = json.loads(recipe_json)  # Convert to dict for logging only
+        app.logger.info(recipe_json)
         
-        app.logger.info(f"Successfully parsed recipe: {recipe_data.get('title', 'No title')}")
+        app.logger.info(f"Successfully parsed recipe: {recipe_json}")
         
-        # Add success field to the dict and return as JSON
-        recipe_data['success'] = True
-        return recipe_data
+        return jsonify(recipe_json)
         
     except Exception as e:
         error_msg = f"Error parsing recipe: {str(e)}"
