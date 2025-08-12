@@ -22,7 +22,7 @@ function App() {
     error: recipesError, 
     addRecipe, 
     deleteRecipe 
-  } = useRecipes(true) // true = use database
+  } = useRecipes()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
