@@ -136,7 +136,12 @@ function App() {
 
       {/* Parsed Recipe Preview with Save Button */}
       {parsedRecipe && (
-        <Box sx={{ mb: 4, width: 345, height: 300, mx: 'auto' }}>
+        <Box sx={{ 
+          mb: 4, 
+          maxWidth: { xs: '100%', sm: '50%', lg: '33.333%' },
+          mx: 'auto',
+          px: 2
+        }}>
           <RecipeCard recipe={parsedRecipe} />
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Button

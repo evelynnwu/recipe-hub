@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from scraper import parse_recipe
+from recipe_scrapers import scrape_me
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React frontend
@@ -17,8 +17,8 @@ def parse():
     if not url:
         return jsonify({"success": False, "error": "URL is required"}), 400
     
-    recipe_data = parse_recipe(url)
-    return jsonify(recipe_data)
+    scraper = scrape_me(url)
+    return scraper.to_json()
 
 
 if __name__ == '__main__':

@@ -24,19 +24,23 @@ const transformRecipeForDB = (recipe: Recipe) => {
 // Transform and validate recipe from database
 const transformRecipeFromDB = (dbRecipe: any): Recipe => {
   try {
+    // Log the raw data to debug validation issues
+    console.log('Raw database recipe:', JSON.stringify(dbRecipe, null, 2));
+    
     // Use Zod to validate and transform the data from database
     return validateRecipe({
-      id: dbRecipe.id,
+      id: String(dbRecipe.id), // Ensure ID is always a string
       title: dbRecipe.title,
       ingredients: Array.isArray(dbRecipe.ingredients) ? dbRecipe.ingredients : [],
       instructions: dbRecipe.instructions,
-      prep_time: dbRecipe.prep_time,
-      cook_time: dbRecipe.cook_time,
-      image: dbRecipe.image,
-      success: dbRecipe.success
+      prep_time: Number(dbRecipe.prep_time), // Ensure prep_time is a number
+      cook_time: dbRecipe.cook_time || undefined, // Handle null values properly
+      image: dbRecipe.image || undefined, // Handle null values properly
+      success: Boolean(dbRecipe.success) // Ensure success is a boolean
     });
   } catch (error) {
     console.error('Invalid recipe data from database:', error);
+    console.error('Failed recipe data:', JSON.stringify(dbRecipe, null, 2));
     throw new Error('Invalid recipe data received from database');
   }
 };

@@ -12,14 +12,20 @@ export default function RecipeCard({ recipe, onDelete }: { recipe: Recipe; onDel
   };
 
   return (
-    <Card sx={{ width: 345, height: 300, margin: 2, backgroundColor: theme.palette.primary.light }}>
+    <Card sx={{ 
+      width: '100%', 
+      margin: 0,
+      backgroundColor: theme.palette.primary.light,
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
       <CardMedia
         component="img"
-        height="140"
+        sx={{ aspectRatio: '16/9', objectFit: 'cover' }}
         image={recipe.image}
         alt={recipe.title}
       />
-      <CardContent>
+      <CardContent sx={{ flexGrow: 1 }}>
         <Typography gutterBottom variant="h6" fontSize="20px" component="div" align="left" sx={{
             fontFamily: theme.typography.h1.fontFamily,
             color: "#000000",

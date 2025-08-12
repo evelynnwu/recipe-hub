@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:docker": "docker compose -f docker-compose.build.yml up --build",
-    "build:test": "docker run --rm -v ${PWD}:/app -w /app node:20 sh -c 'npm ci && npm run build'",
+    "build:test": "docker run --rm -v ${PWD}:/app -w /app node:20 sh -c 'npm install && npm run build'",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -41,6 +41,7 @@
     "vite": "^7.0.4"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.46.2"
+    "@rollup/rollup-linux-x64-gnu": "^4.46.2",
+    "@rollup/rollup-win32-x64-msvc": "4.46.2"
   }
 }
