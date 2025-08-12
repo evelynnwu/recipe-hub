@@ -42,6 +42,8 @@ function App() {
       })
 
       const data = await response.json()
+      console.log(data);
+      console.log(data.success);
       
       if (data.success) {
         // Validate the parsed recipe with Zod
