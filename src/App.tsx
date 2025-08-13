@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import RecipeCard from './components/RecipeCard'
-import { Container, Box, TextField, Button, Alert, Typography, CircularProgress } from '@mui/material'
+import { Container, Box, TextField, Button, Alert, CircularProgress } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import recipeHubLogo from './assets/recipeHubLogo.png'
 import { useRecipes } from './hooks/useRecipes'

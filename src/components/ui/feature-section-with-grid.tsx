@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import type { Recipe } from "@/types/Recipe";
 
 interface RecipeGridProps {
