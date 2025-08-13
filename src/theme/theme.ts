@@ -16,7 +16,7 @@ export const theme = createTheme({
       fontWeight: 500,
     },
     h4: {
-      fontFamily: '"Inter", sans-serif',
+      fontFamily: '"Open Sans", sans-serif',
       fontWeight: 400,
     },
     body1: {

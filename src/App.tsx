@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import './App.css'
 import RecipeCard from './components/RecipeCard'
-import { Container, Box, TextField, Button, Alert, Typography, CircularProgress, AppBar, Toolbar } from '@mui/material'
+import { Container, Box, TextField, Button, Alert, Typography, CircularProgress } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
+import recipeHubLogo from './assets/recipeHubLogo.png'
 import { useRecipes } from './hooks/useRecipes'
 import type { Recipe } from './types/Recipe';
 import { validateRecipe } from './types/Recipe';
@@ -98,14 +99,29 @@ const RecipeApp: React.FC = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: theme.palette.primary.main, mb: 4, width: '100%'}}>
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'black', width: '100%'}}>
-            Recipe Hub
-          </Typography>
+      <Box 
+        sx={{ 
+          width: '100vw',
+          backgroundColor: theme.palette.primary.main,
+          py: 2,
+          px: 3,
+          position: 'relative',
+          left: '50%',
+          right: '50%',
+          marginLeft: '-50vw',
+          marginRight: '-50vw',
+          mb: 4
+        }}
+      >
+        <Box sx={{ maxWidth: 'xl', mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <img 
+            src={recipeHubLogo} 
+            alt="Recipe Hub" 
+            style={{ height: '48px', width: 'auto' }} 
+          />
           <UserProfile />
-        </Toolbar>
-      </AppBar>
+        </Box>
+      </Box>
 
       <Container maxWidth="xl" sx={{ py: 4 }}>
 
