@@ -52,12 +52,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
   const signInWithGoogle = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: import.meta.env.VITE_APP_URL || window.location.origin
+          redirectTo: window.location.origin || supabaseAnonKey
         }
       });
       if (error) throw error;

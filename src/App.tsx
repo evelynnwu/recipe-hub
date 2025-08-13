@@ -98,9 +98,9 @@ const RecipeApp: React.FC = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: theme.palette.primary.main, mb: 4 }}>
+      <AppBar position="static" sx={{ backgroundColor: theme.palette.primary.main, mb: 4, fullWidth}}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'black', fullWidth}}>
             Recipe Hub
           </Typography>
           <UserProfile />
@@ -110,7 +110,7 @@ const RecipeApp: React.FC = () => {
       <Container maxWidth="xl" sx={{ py: 4 }}>
 
       {/* Compact Parse Form */}
-      <Box component="form" onSubmit={handleSubmit} sx={{ mb: 4 }}>
+      <Box component="form" onSubmit={handleSubmit} sx={{ mb: 1 }}>
         <Box sx={{ display: 'flex', gap: 2, maxWidth: 600, mx: 'auto' }}>
           <TextField
             fullWidth
@@ -162,7 +162,7 @@ const RecipeApp: React.FC = () => {
       {/* Parsed Recipe Preview with Save Button */}
       {parsedRecipe && (
         <Box sx={{ 
-          mb: 4, 
+          mb: 1,
           maxWidth: { xs: '100%', sm: '50%', lg: '33.333%' },
           mx: 'auto',
           px: 2
