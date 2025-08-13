@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import './App.css'
 import RecipeCard from './components/RecipeCard'
-import { Container, Box, TextField, Button, Alert, CircularProgress } from '@mui/material'
+import { Container, Box, TextField, Button, Alert, CircularProgress, ThemeProvider } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import recipeHubLogo from './assets/recipeHubLogo.png'
+import { theme } from './theme/theme'
 import { useRecipes } from './hooks/useRecipes'
 import type { Recipe } from './types/Recipe';
 import { validateRecipe } from './types/Recipe';
@@ -102,24 +103,24 @@ const RecipeApp: React.FC = () => {
       <Box 
         sx={{ 
           width: '100vw',
-          backgroundColor: theme.palette.primary.main,
-          py: 2,
-          px: 3,
+          backgroundColor: theme.palette.secondary.light,
           position: 'relative',
           left: '50%',
           right: '50%',
           marginLeft: '-50vw',
           marginRight: '-50vw',
-          mb: 4
+          height: '100px'
         }}
       >
-        <Box sx={{ maxWidth: 'xl', mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box sx={{ maxWidth: 'xl', mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', height: '100%' }}>
           <img 
             src={recipeHubLogo} 
             alt="Recipe Hub" 
-            style={{ height: '48px', width: 'auto' }} 
+            style={{ height: '150%', width: 'auto'}}
           />
-          <UserProfile />
+          <Box sx={{ position: 'absolute', right: 0 }}>
+            <UserProfile />
+          </Box>
         </Box>
       </Box>
 
@@ -213,9 +214,11 @@ const RecipeApp: React.FC = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <RecipeApp />
-    </AuthProvider>
+    <ThemeProvider theme={theme}>
+      <AuthProvider>
+        <RecipeApp />
+      </AuthProvider>
+    </ThemeProvider>
   )
 }
 

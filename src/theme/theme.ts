@@ -13,7 +13,7 @@ export const theme = createTheme({
     },
     h3: {
       fontFamily: '"Inter", sans-serif',
-      fontWeight: 500,
+      fontWeight: 700,
     },
     h4: {
       fontFamily: '"Open Sans", sans-serif',
@@ -35,11 +35,12 @@ export const theme = createTheme({
   },
   palette: {
     primary: {
-      main: '#F7F7F7', // Green for food/recipe theme
+      main: '#CCD4C7', // Green for food/recipe theme
       contrastText: '#FFFFFF' ,
     },
     secondary: {
       main: '#FA6C25', // Orange accent
+      light: '#e3ccc1',
       contrastText: '#FFFFFF'
     },
     background: {

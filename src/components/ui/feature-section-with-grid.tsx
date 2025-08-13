@@ -1,11 +1,26 @@
 import type { Recipe } from "@/types/Recipe";
-
+import { useTheme } from '@mui/material/styles'
+import { useState } from 'react'
+import { Modal, Box, Button, Typography, IconButton } from '@mui/material'
 interface RecipeGridProps {
   recipes: Recipe[];
   onDeleteRecipe: (id: string) => void;
 }
 
 function RecipeGrid({ recipes, onDeleteRecipe }: RecipeGridProps) {
+  const theme = useTheme();
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleViewRecipe = (recipe: Recipe) => {
+    setSelectedRecipe(recipe);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedRecipe(null);
+  };
 
   return (
     <div className="w-full py-20 lg:py-40">
@@ -31,7 +46,7 @@ function RecipeGrid({ recipes, onDeleteRecipe }: RecipeGridProps) {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {recipes.map((recipe) => (
-                <div key={recipe.id} className="flex flex-col gap-2 group relative">
+                <div key={recipe.id} className="flex flex-col gap-2 group relative justify-center">
                   <div className="bg-muted rounded-md aspect-video mb-2 overflow-hidden">
                     {recipe.image ? (
                       <img 
@@ -49,13 +64,27 @@ function RecipeGrid({ recipes, onDeleteRecipe }: RecipeGridProps) {
                       </div>
                     )}
                   </div>
-                  <h3 className="text-xl tracking-tight">{recipe.title}</h3>
+                  <h3 className="text-xl font-semibold">{recipe.title}</h3>
                   <p className="text-muted-foreground text-base">
-                    {recipe.ingredients?.length > 0 
-                      ? `${recipe.ingredients.slice(0, 3).join(', ')}${recipe.ingredients.length > 3 ? '...' : ''}`
-                      : 'No ingredients listed'
+                    {recipe.cook_time
+                      ? `Cook time: ${recipe.cook_time} mins`
+                      : 'Cook time not available'
                     }
                   </p>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                    <Button
+                      variant="contained"
+                      onClick={() => handleViewRecipe(recipe)}
+                      sx={{
+                        backgroundColor: theme.palette.secondary.main,
+                        '&:hover': {
+                          backgroundColor: theme.palette.secondary.dark,
+                        }
+                      }}
+                    >
+                      View Recipe
+                    </Button>
+                  </Box>
                   
                   {recipe.id && (
                     <button
@@ -72,6 +101,86 @@ function RecipeGrid({ recipes, onDeleteRecipe }: RecipeGridProps) {
           )}
         </div>
       </div>
+
+      {/* Recipe Details Modal */}
+      <Modal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="recipe-modal-title"
+        aria-describedby="recipe-modal-description"
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: { xs: '90%', sm: '80%', md: '60%' },
+          maxHeight: '80vh',
+          bgcolor: 'background.paper',
+          border: '2px solid',
+          borderColor: theme.palette.primary.main,
+          borderRadius: 2,
+          boxShadow: 24,
+          p: 4,
+          overflow: 'auto'
+        }}>
+          {selectedRecipe && (
+            <>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography id="recipe-modal-title" variant="h4" component="h2">
+                  {selectedRecipe.title}
+                </Typography>
+                <IconButton onClick={handleCloseModal}>
+                  ×
+                </IconButton>
+              </Box>
+
+              {selectedRecipe.image && (
+                <Box sx={{ mb: 3 }}>
+                  <img 
+                    src={selectedRecipe.image} 
+                    alt={selectedRecipe.title}
+                    style={{
+                      width: '100%',
+                      maxHeight: '300px',
+                      objectFit: 'cover',
+                      borderRadius: '8px'
+                    }}
+                  />
+                </Box>
+              )}
+
+              {selectedRecipe.cook_time && (
+                <Typography variant="body1" sx={{ mb: 2, color: theme.palette.text.secondary }}>
+                  Cook time: {selectedRecipe.cook_time} mins
+                </Typography>
+              )}
+
+              <Typography variant="h5" sx={{ mb: 2, color: theme.palette.secondary.main }}>
+                Ingredients
+              </Typography>
+              <Box sx={{ mb: 3 }}>
+                {selectedRecipe.ingredients?.map((ingredient, index) => (
+                  <Typography key={index} variant="body1" sx={{ mb: 1 }}>
+                    • {ingredient}
+                  </Typography>
+                ))}
+              </Box>
+
+              <Typography variant="h5" sx={{ mb: 2, color: theme.palette.secondary.main }}>
+                Instructions
+              </Typography>
+              <Box>
+                {selectedRecipe.instructions.split('\n').filter(step => step.trim()).map((step, index) => (
+                  <Typography key={index} variant="body1" sx={{ mb: 1 }}>
+                    {index + 1}. {step.trim()}
+                  </Typography>
+                ))}
+              </Box>
+            </>
+          )}
+        </Box>
+      </Modal>
     </div>
   );
 }
