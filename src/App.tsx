@@ -98,9 +98,9 @@ const RecipeApp: React.FC = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: theme.palette.primary.main, mb: 4, fullWidth}}>
+      <AppBar position="static" sx={{ backgroundColor: theme.palette.primary.main, mb: 4, width: '100%'}}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'black', fullWidth}}>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'black', width: '100%'}}>
             Recipe Hub
           </Typography>
           <UserProfile />
