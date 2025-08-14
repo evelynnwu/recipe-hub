@@ -1,7 +1,7 @@
 import type { Recipe } from "@/types/Recipe";
 import { useTheme } from '@mui/material/styles'
 import { useState } from 'react'
-import { Modal, Box, Button, Typography, IconButton } from '@mui/material'
+import { Modal, Box, Typography, IconButton } from '@mui/material'
 interface RecipeGridProps {
   recipes: Recipe[];
   onDeleteRecipe: (id: string) => void;
