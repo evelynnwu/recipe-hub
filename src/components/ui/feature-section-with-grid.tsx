@@ -28,7 +28,7 @@ function RecipeGrid({ recipes, onDeleteRecipe }: RecipeGridProps) {
         <div className="flex flex-col gap-10">
           <div className="flex gap-4 flex-col items-start">
             <div className="flex gap-2 flex-col">
-              <h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular text-left">
+              <h2 className="h3 text-3xl md:text-5xl tracking-tighter max-w-xl font-regular text-left">
                 Saved Recipe Collection
               </h2>
               <p className="text-lg max-w-xl lg:max-w-lg leading-relaxed tracking-tight text-muted-foreground text-left">
@@ -44,47 +44,38 @@ function RecipeGrid({ recipes, onDeleteRecipe }: RecipeGridProps) {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-12 px-4 sm:px-6 lg:px-8">
               {recipes.map((recipe) => (
-                <div key={recipe.id} className="flex flex-col gap-2 group relative justify-center">
-                  <div className="bg-muted rounded-md aspect-video mb-2 overflow-hidden">
+                <div key={recipe.id} className="flex flex-col group relative h-100">
+                  <div 
+                    className="bg-muted rounded-md aspect-[3/4] mb-2 overflow-hidden cursor-pointer relative"
+                    onClick={() => handleViewRecipe(recipe)}
+                  >
                     {recipe.image ? (
                       <img 
                         src={recipe.image} 
                         alt={recipe.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-opacity duration-300 hover:opacity-70"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                      <div className="w-full h-full bg-muted flex items-center justify-center transition-opacity duration-300 hover:opacity-70">
                         <span className="text-muted-foreground text-sm">No image</span>
                       </div>
                     )}
                   </div>
-                  <h3 className="text-xl font-semibold">{recipe.title}</h3>
-                  <p className="text-muted-foreground text-base">
-                    {recipe.cook_time
-                      ? `Cook time: ${recipe.cook_time} mins`
-                      : 'Cook time not available'
-                    }
-                  </p>
-                  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                    <Button
-                      variant="contained"
-                      onClick={() => handleViewRecipe(recipe)}
-                      sx={{
-                        backgroundColor: theme.palette.secondary.main,
-                        '&:hover': {
-                          backgroundColor: theme.palette.secondary.dark,
-                        }
-                      }}
-                    >
-                      View Recipe
-                    </Button>
-                  </Box>
+                  <div className="flex-1 flex flex-col gap-1">
+                    <h3 className="text-xl font-semibold line-clamp-2">{recipe.title}</h3>
+                    <p className="text-muted-foreground text-base">
+                      {recipe.cook_time
+                        ? `Cook time: ${recipe.cook_time} mins`
+                        : 'Cook time not available'
+                      }
+                    </p>
+                  </div>
                   
                   {recipe.id && (
                     <button

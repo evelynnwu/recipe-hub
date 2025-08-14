@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS recipes (
   title VARCHAR NOT NULL,
   ingredients JSONB NOT NULL,
   instructions TEXT NOT NULL,
-  prep_time INTEGER NOT NULL,
+  prep_time VARCHAR,
   cook_time VARCHAR,
   image VARCHAR,
   success BOOLEAN NOT NULL DEFAULT true,
@@ -41,6 +41,8 @@ END $$;
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE recipes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE recipes ALTER COLUMN prep_time TYPE VARCHAR;
+ALTER TABLE recipes ALTER COLUMN cook_time TYPE VARCHAR;
 
 -- Create new user-specific policies
 CREATE POLICY "Users can view own recipes" ON recipes 
