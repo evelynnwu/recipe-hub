@@ -180,7 +180,7 @@ function RecipeGrid({ recipes, onDeleteRecipe, onUpdateRecipe }: RecipeGridProps
                 )}
                 <Box>
                   {onUpdateRecipe && !isEditing && (
-                    <Button onClick={handleEditClick} sx={{backgroundColor: theme.palette.primary.darker, color: "#FFFFFF", mr: 1 }}>
+                    <Button onClick={handleEditClick} sx={{backgroundColor: theme.palette.primary.dark, color: "#FFFFFF", mr: 1 }}>
                       Edit
                     </Button>
                   )}

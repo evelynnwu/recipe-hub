@@ -63,7 +63,7 @@ export const LoginForm: React.FC = () => {
           disabled={loading}
           sx={{
             py: 1.5,
-            backgroundColor: theme.palette.primary.darker,
+            backgroundColor: theme.palette.primary.dark,
             '&:hover': {
               backgroundColor: theme.palette.primary.dark,
             },
