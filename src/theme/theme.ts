@@ -2,13 +2,13 @@ import { createTheme } from '@mui/material/styles';
 
 export const theme = createTheme({
   typography: {
-    fontFamily: '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
+    fontFamily: '"Montserrat", "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif',
     h1: {
       fontFamily: '"Inter", "Georgia", serif',
       fontWeight: 700,
     },
     h2: {
-      fontFamily: '"Playfair Display", "Georgia", serif',
+      fontFamily: '"Inter", "Georgia", serif',
       fontWeight: 600,
     },
     h3: {
@@ -16,7 +16,7 @@ export const theme = createTheme({
       fontWeight: 700,
     },
     h4: {
-      fontFamily: '"Open Sans", sans-serif',
+      fontFamily: '"Inter", sans-serif',
       fontWeight: 400,
     },
     body1: {

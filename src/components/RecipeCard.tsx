@@ -15,7 +15,7 @@ export default function RecipeCard({ recipe, onDelete }: { recipe: Recipe; onDel
     <Card sx={{ 
       width: '100%', 
       margin: 0,
-      backgroundColor: theme.palette.primary.light,
+      backgroundColor: "#FFFFFF",
       display: 'flex',
       flexDirection: 'column'
     }}>

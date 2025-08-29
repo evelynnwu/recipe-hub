@@ -46,7 +46,7 @@ export const LoginForm: React.FC = () => {
         </Typography>
         
         <Typography variant="body1" color="text.primary" sx={{ mb: 3 }}>
-          Sign in to save and manage your personal recipe collection
+          Just sign in with Google to save and manage your personal recipe collection!
         </Typography>
 
         {error && (
