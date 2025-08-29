@@ -42,10 +42,10 @@ export const LoginForm: React.FC = () => {
         }}
       >
         <Typography variant="h4" component="h1" gutterBottom>
-          Welcome to Recipe Hub
+          Welcome to Recipe Hub!
         </Typography>
         
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        <Typography variant="body1" color="text.primary" sx={{ mb: 3 }}>
           Sign in to save and manage your personal recipe collection
         </Typography>
 
@@ -63,9 +63,9 @@ export const LoginForm: React.FC = () => {
           disabled={loading}
           sx={{
             py: 1.5,
-            backgroundColor: theme.palette.secondary.main,
+            backgroundColor: theme.palette.primary.darker,
             '&:hover': {
-              backgroundColor: theme.palette.secondary.dark,
+              backgroundColor: theme.palette.primary.dark,
             },
             '&:disabled': {
               backgroundColor: theme.palette.action.disabledBackground,
@@ -76,7 +76,7 @@ export const LoginForm: React.FC = () => {
           {loading ? 'Signing in...' : 'Sign in with Google'}
         </Button>
 
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
+        <Typography variant="caption" sx={{ mt: 2, display: 'block' }}>
           Your recipes will be private and only visible to you
         </Typography>
       </Paper>

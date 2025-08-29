@@ -27,6 +27,7 @@ const RecipeApp: React.FC = () => {
     loading: recipesLoading, 
     error: recipesError, 
     addRecipe, 
+    updateRecipe,
     deleteRecipe 
   } = useRecipes()
 
@@ -103,7 +104,7 @@ const RecipeApp: React.FC = () => {
       <Box 
         sx={{ 
           width: '100vw',
-          backgroundColor: theme.palette.secondary.light,
+          backgroundColor: theme.palette.primary.light,
           position: 'relative',
           left: '50%',
           right: '50%',
@@ -205,7 +206,8 @@ const RecipeApp: React.FC = () => {
       {/* Recipe Grid */}
       <RecipeGrid 
         recipes={savedRecipes} 
-        onDeleteRecipe={(id) => deleteRecipe(id)} 
+        onDeleteRecipe={(id) => deleteRecipe(id)}
+        onUpdateRecipe={updateRecipe}
       />
       </Container>
     </>

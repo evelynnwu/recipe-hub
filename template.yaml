@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Recipe Hub Backend - Serverless API
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.9
+    Environment:
+      Variables:
+        PYTHONPATH: /var/runtime
+
+Resources:
+  # API Gateway
+  RecipeHubApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+
+  # Parse Recipe Function
+  ParseRecipeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda/
+      Handler: parse_recipe.lambda_handler
+      Description: Parse recipes from URLs
+      Events:
+        ParseRecipe:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RecipeHubApi
+            Path: /api/parse
+            Method: post
+        ParseRecipeOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RecipeHubApi
+            Path: /api/parse
+            Method: options
+
+  # Health Check Function
+  HealthCheckFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda/
+      Handler: health_check.lambda_handler
+      Description: Health check endpoint
+      Events:
+        HealthCheck:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RecipeHubApi
+            Path: /api/health
+            Method: get
+        HealthCheckOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RecipeHubApi
+            Path: /api/health
+            Method: options
+
+Outputs:
+  RecipeHubApiUrl:
+    Description: "API Gateway endpoint URL for Recipe Hub"
+    Value: !Sub "https://${RecipeHubApi}.execute-api.${AWS::Region}.amazonaws.com/prod/"
+    Export:
+      Name: RecipeHubApiUrl
+      
+  ParseRecipeApi:
+    Description: "API Gateway endpoint URL for Parse Recipe function"
+    Value: !Sub "https://${RecipeHubApi}.execute-api.${AWS::Region}.amazonaws.com/prod/api/parse"
+    
+  HealthCheckApi:
+    Description: "API Gateway endpoint URL for Health Check function"
+    Value: !Sub "https://${RecipeHubApi}.execute-api.${AWS::Region}.amazonaws.com/prod/api/health"

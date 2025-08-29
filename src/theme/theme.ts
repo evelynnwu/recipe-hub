@@ -36,6 +36,8 @@ export const theme = createTheme({
   palette: {
     primary: {
       main: '#CCD4C7', // Green for food/recipe theme
+      darker: '#8fa383',
+      dark: '#546947',
       contrastText: '#FFFFFF' ,
     },
     secondary: {

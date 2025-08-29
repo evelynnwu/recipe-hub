@@ -1,4 +1,9 @@
 version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - pip install -r lambda/requirements.txt -t lambda/
 frontend:
   phases:
     preBuild:

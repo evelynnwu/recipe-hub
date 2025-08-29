@@ -1,25 +1,70 @@
 import type { Recipe } from "@/types/Recipe";
 import { useTheme } from '@mui/material/styles'
 import { useState } from 'react'
-import { Modal, Box, Typography, IconButton } from '@mui/material'
+import { Modal, Box, Typography, IconButton, Button, TextField } from '@mui/material'
 interface RecipeGridProps {
   recipes: Recipe[];
   onDeleteRecipe: (id: string) => void;
+  onUpdateRecipe?: (id: string, updatedData: Partial<Recipe>) => Promise<void>;
 }
 
-function RecipeGrid({ recipes, onDeleteRecipe }: RecipeGridProps) {
+function RecipeGrid({ recipes, onDeleteRecipe, onUpdateRecipe }: RecipeGridProps) {
   const theme = useTheme();
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedRecipe, setEditedRecipe] = useState<Partial<Recipe>>({});
 
   const handleViewRecipe = (recipe: Recipe) => {
     setSelectedRecipe(recipe);
+    setEditedRecipe({
+      title: recipe.title,
+      ingredients: recipe.ingredients,
+      instructions: recipe.instructions,
+      cook_time: recipe.cook_time,
+      prep_time: recipe.prep_time
+    });
     setModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setModalOpen(false);
     setSelectedRecipe(null);
+    setIsEditing(false);
+    setEditedRecipe({});
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    if (selectedRecipe) {
+      setEditedRecipe({
+        title: selectedRecipe.title,
+        ingredients: selectedRecipe.ingredients,
+        instructions: selectedRecipe.instructions,
+        cook_time: selectedRecipe.cook_time,
+        prep_time: selectedRecipe.prep_time
+      });
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (selectedRecipe && onUpdateRecipe && selectedRecipe.id) {
+      try {
+        await onUpdateRecipe(selectedRecipe.id, editedRecipe);
+        setSelectedRecipe({ ...selectedRecipe, ...editedRecipe });
+        setIsEditing(false);
+      } catch (error) {
+        console.error('Failed to update recipe:', error);
+      }
+    }
+  };
+
+  const handleFieldChange = (field: keyof Recipe, value: any) => {
+    setEditedRecipe(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -118,12 +163,31 @@ function RecipeGrid({ recipes, onDeleteRecipe }: RecipeGridProps) {
           {selectedRecipe && (
             <>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography id="recipe-modal-title" variant="h4" component="h2">
-                  {selectedRecipe.title}
-                </Typography>
-                <IconButton onClick={handleCloseModal}>
-                  ×
-                </IconButton>
+                {isEditing ? (
+                  <TextField
+                    variant="outlined"
+                    value={editedRecipe.title || ''}
+                    onChange={(e) => handleFieldChange('title', e.target.value)}
+                    sx={{ flexGrow: 1, mr: 2 }}
+                    InputProps={{
+                      sx: { fontSize: '2.125rem', fontWeight: 'bold' }
+                    }}
+                  />
+                ) : (
+                  <Typography id="recipe-modal-title" variant="h4" component="h2">
+                    {selectedRecipe.title}
+                  </Typography>
+                )}
+                <Box>
+                  {onUpdateRecipe && !isEditing && (
+                    <Button onClick={handleEditClick} sx={{backgroundColor: theme.palette.primary.darker, color: "#FFFFFF", mr: 1 }}>
+                      Edit
+                    </Button>
+                  )}
+                  <IconButton onClick={handleCloseModal}>
+                    ×
+                  </IconButton>
+                </Box>
               </Box>
 
               {selectedRecipe.image && (
@@ -141,32 +205,115 @@ function RecipeGrid({ recipes, onDeleteRecipe }: RecipeGridProps) {
                 </Box>
               )}
 
-              {selectedRecipe.cook_time && (
-                <Typography variant="body1" sx={{ mb: 2, color: theme.palette.text.secondary }}>
-                  Cook time: {selectedRecipe.cook_time} mins
-                </Typography>
-              )}
+              <Box sx={{ mb: 2, display: 'flex', gap: 2 }}>
+                <Box>
+                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 0.5 }}>
+                    Cook time (mins):
+                  </Typography>
+                  {isEditing ? (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={editedRecipe.cook_time || ''}
+                      onChange={(e) => handleFieldChange('cook_time', e.target.value)}
+                      sx={{ width: 100 }}
+                    />
+                  ) : (
+                    <Typography variant="body1">
+                      {selectedRecipe.cook_time || 'Not specified'}
+                    </Typography>
+                  )}
+                </Box>
+                <Box>
+                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 0.5 }}>
+                    Prep time (mins):
+                  </Typography>
+                  {isEditing ? (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={editedRecipe.prep_time || ''}
+                      onChange={(e) => handleFieldChange('prep_time', e.target.value)}
+                      sx={{ width: 100 }}
+                    />
+                  ) : (
+                    <Typography variant="body1">
+                      {selectedRecipe.prep_time || 'Not specified'}
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
 
               <Typography variant="h5" sx={{ mb: 2, color: theme.palette.secondary.main }}>
                 Ingredients
               </Typography>
               <Box sx={{ mb: 3 }}>
-                {selectedRecipe.ingredients?.map((ingredient, index) => (
-                  <Typography key={index} variant="body1" sx={{ mb: 1 }}>
-                    • {ingredient}
-                  </Typography>
-                ))}
+                {isEditing ? (
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={6}
+                    value={(editedRecipe.ingredients || []).join('\n')}
+                    onChange={(e) => handleFieldChange('ingredients', e.target.value.split('\n').filter(line => line.trim()))}
+                    variant="outlined"
+                    placeholder="Enter each ingredient on a new line"
+                  />
+                ) : (
+                  selectedRecipe.ingredients?.map((ingredient, index) => (
+                    <Typography key={index} variant="body1" sx={{ mb: 1 }}>
+                      • {ingredient}
+                    </Typography>
+                  ))
+                )}
               </Box>
 
-              <Typography variant="h5" sx={{ mb: 2, color: theme.palette.secondary.main }}>
-                Instructions
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h5" sx={{ color: theme.palette.secondary.main }}>
+                  Instructions
+                </Typography>
+                {isEditing && (
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button 
+                      size="small"
+                      variant="contained" 
+                      onClick={handleSaveEdit}
+                      sx={{
+                        backgroundColor: theme.palette.primary.main,
+                        '&:hover': {
+                          backgroundColor: theme.palette.primary.dark,
+                        }
+                      }}
+                    >
+                      Save
+                    </Button>
+                    <Button 
+                      size="small"
+                      variant="outlined" 
+                      onClick={handleCancelEdit}
+                    >
+                      Cancel
+                    </Button>
+                  </Box>
+                )}
+              </Box>
               <Box>
-                {selectedRecipe.instructions.split('\n').filter(step => step.trim()).map((step, index) => (
-                  <Typography key={index} variant="body1" sx={{ mb: 1 }}>
-                    {index + 1}. {step.trim()}
-                  </Typography>
-                ))}
+                {isEditing ? (
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={8}
+                    value={editedRecipe.instructions || ''}
+                    onChange={(e) => handleFieldChange('instructions', e.target.value)}
+                    variant="outlined"
+                    placeholder="Enter cooking instructions"
+                  />
+                ) : (
+                  selectedRecipe.instructions.split('\n').filter(step => step.trim()).map((step, index) => (
+                    <Typography key={index} variant="body1" sx={{ mb: 1 }}>
+                      {index + 1}. {step.trim()}
+                    </Typography>
+                  ))
+                )}
               </Box>
             </>
           )}
