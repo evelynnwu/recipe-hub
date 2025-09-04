@@ -40,8 +40,8 @@ export const theme = createTheme({
       contrastText: '#FFFFFF' ,
     },
     secondary: {
-      main: '#FA6C25', // Orange accent
-      light: '#e3ccc1',
+      main: '#e67740', // Orange accent
+      light: '#faad87',
       contrastText: '#FFFFFF'
     },
     background: {

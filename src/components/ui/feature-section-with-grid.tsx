@@ -1,7 +1,8 @@
 import type { Recipe } from "@/types/Recipe";
 import { useTheme } from '@mui/material/styles'
 import { useState } from 'react'
-import { Modal, Box, Typography, IconButton, Button, TextField } from '@mui/material'
+import { Modal, Box, Typography, IconButton, Button, TextField, Checkbox } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
 interface RecipeGridProps {
   recipes: Recipe[];
   onDeleteRecipe: (id: string) => void;
@@ -14,6 +15,7 @@ function RecipeGrid({ recipes, onDeleteRecipe, onUpdateRecipe }: RecipeGridProps
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedRecipe, setEditedRecipe] = useState<Partial<Recipe>>({});
+  const [selectedRecipeIds, setSelectedRecipeIds] = useState<Set<string>>(new Set());
 
   const handleViewRecipe = (recipe: Recipe) => {
     setSelectedRecipe(recipe);
@@ -67,8 +69,30 @@ function RecipeGrid({ recipes, onDeleteRecipe, onUpdateRecipe }: RecipeGridProps
     setEditedRecipe(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleRecipeSelect = (recipeId: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setSelectedRecipeIds(prev => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(recipeId)) {
+        newSelected.delete(recipeId);
+      } else {
+        newSelected.add(recipeId);
+      }
+      return newSelected;
+    });
+  };
+
+  const handleBulkDelete = () => {
+    selectedRecipeIds.forEach(id => onDeleteRecipe(id));
+    setSelectedRecipeIds(new Set());
+  };
+
+  const handleClearSelection = () => {
+    setSelectedRecipeIds(new Set());
+  };
+
   return (
-    <div className="w-full py-20 lg:py-40">
+    <div className="w-full pt-8 pb-20 lg:pt-12 lg:pb-40">
       <div className="container mx-auto">
         <div className="flex flex-col gap-10">
           <div className="flex gap-4 flex-col items-start">
@@ -90,25 +114,56 @@ function RecipeGrid({ recipes, onDeleteRecipe, onUpdateRecipe }: RecipeGridProps
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-12 px-4 sm:px-6 lg:px-8">
-              {recipes.map((recipe) => (
+              {recipes.map((recipe) => {
+                const isSelected = recipe.id ? selectedRecipeIds.has(recipe.id) : false;
+                const isInSelectMode = selectedRecipeIds.size > 0;
+                const shouldDim = isInSelectMode && !isSelected;
+                
+                return (
                 <div key={recipe.id} className="flex flex-col group relative h-100">
                   <div 
-                    className="bg-muted rounded-md aspect-[3/4] mb-2 overflow-hidden cursor-pointer relative"
-                    onClick={() => handleViewRecipe(recipe)}
+                    className={`bg-muted rounded-md aspect-[3/4] mb-2 overflow-hidden cursor-pointer relative transition-opacity duration-300 ${
+                      shouldDim ? 'opacity-50 hover:opacity-100' : 'opacity-100'
+                    } ${
+                      !isInSelectMode ? 'hover:opacity-70' : ''
+                    }`}
+                    onClick={() => isInSelectMode ? (recipe.id && handleRecipeSelect(recipe.id, {} as React.MouseEvent)) : handleViewRecipe(recipe)}
                   >
                     {recipe.image ? (
                       <img 
                         src={recipe.image} 
                         alt={recipe.title}
-                        className="w-full h-full object-cover transition-opacity duration-300 hover:opacity-70"
+                        className="w-full h-full object-cover"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full bg-muted flex items-center justify-center transition-opacity duration-300 hover:opacity-70">
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
                         <span className="text-muted-foreground text-sm">No image</span>
+                      </div>
+                    )}
+                    {recipe.id && (
+                      <div className={`absolute top-2 left-2 z-10 transition-opacity ${
+                        isSelected || (!isInSelectMode && 'opacity-0 group-hover:opacity-100') || (isInSelectMode && 'opacity-100')
+                      }`}>
+                        <div 
+                          className="w-6 h-6 rounded-full border-2 border-white bg-black bg-opacity-20 flex items-center justify-center cursor-pointer hover:bg-opacity-40 transition-all"
+                          onClick={(e) => recipe.id && handleRecipeSelect(recipe.id, e)}
+                        >
+                          {isSelected && (
+                            <Checkbox
+                              checked={true}
+                              sx={{
+                                color: 'white',
+                                '&.Mui-checked': { color: 'white' },
+                                padding: 0,
+                                '& .MuiSvgIcon-root': { fontSize: 16 }
+                              }}
+                            />
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -121,21 +176,61 @@ function RecipeGrid({ recipes, onDeleteRecipe, onUpdateRecipe }: RecipeGridProps
                       }
                     </p>
                   </div>
-                  
-                  {recipe.id && (
-                    <button
-                      onClick={() => onDeleteRecipe(recipe.id!)}
-                      className="absolute top-2 right-2 hover:bg-gray text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-20 transition-opacity"
-                      aria-label="Delete recipe"
-                    >
-                      ×
-                    </button>
-                  )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
+
+        {/* Delete Banner */}
+        {selectedRecipeIds.size > 0 && (
+          <Box
+            sx={{
+              position: 'fixed',
+              top: 16,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 1000,
+              backgroundColor: theme.palette.primary.dark,
+              color: 'white',
+              borderRadius: 2,
+              padding: 2,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              boxShadow: 3
+            }}
+          >
+            <Typography variant="body1">
+              {selectedRecipeIds.size} recipe{selectedRecipeIds.size !== 1 ? 's' : ''} selected
+            </Typography>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={handleClearSelection}
+              sx={{ color: 'white', borderColor: 'white', backgroundColor: theme.palette.secondary.main,
+                  '&:hover': {
+                      borderColor: 'white',
+                      backgroundColor: theme.palette.secondary.dark
+                      }
+                  }}
+            >
+              Cancel
+            </Button>
+            <IconButton
+              onClick={handleBulkDelete}
+              sx={{
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                }
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        )}
       </div>
 
       {/* Recipe Details Modal */}
@@ -319,6 +414,7 @@ function RecipeGrid({ recipes, onDeleteRecipe, onUpdateRecipe }: RecipeGridProps
           )}
         </Box>
       </Modal>
+
     </div>
   );
 }
