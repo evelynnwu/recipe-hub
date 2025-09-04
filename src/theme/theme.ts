@@ -16,7 +16,7 @@ export const theme = createTheme({
       fontWeight: 700,
     },
     h4: {
-      fontFamily: '"Inter", sans-serif',
+      fontFamily: '"Montserrat", sans-serif',
       fontWeight: 400,
     },
     body1: {
