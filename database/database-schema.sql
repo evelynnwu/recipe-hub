@@ -1,5 +1,15 @@
--- Recipe Hub Database Schema - Safe Version
+-- Recipe Hub Database Schema - Consolidated Version
 -- Run this in your Supabase SQL Editor
+-- Safe to run multiple times (idempotent)
+
+-- This file only contains recipes table and related functionality
+-- For complete setup, also run:
+-- 1. database/001_user_profiles.sql (user profiles, search view, triggers)
+-- 2. database/002_friendships.sql (friendships table, policies, functions)
+
+-- ============================================================================
+-- RECIPES TABLE AND FUNCTIONALITY
+-- ============================================================================
 
 -- Create recipes table
 CREATE TABLE IF NOT EXISTS recipes (
@@ -41,13 +51,14 @@ END $$;
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE recipes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE recipes ALTER COLUMN prep_time TYPE VARCHAR;
-ALTER TABLE recipes ALTER COLUMN cook_time TYPE VARCHAR;
 
--- Create new user-specific policies
+-- Basic RLS policy - users can view their own recipes
+-- (Friends policy will be added after friendships table is created)
+DROP POLICY IF EXISTS "Users can view own recipes" ON recipes;
 CREATE POLICY "Users can view own recipes" ON recipes 
     FOR SELECT USING (auth.uid() = user_id);
 
+-- Users can only modify their own recipes
 CREATE POLICY "Users can insert own recipes" ON recipes 
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 

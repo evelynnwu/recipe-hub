@@ -205,3 +205,54 @@ export const getRecipeById = async (id: string): Promise<Recipe | null> => {
     throw error;
   }
 };
+
+// Load recipes from a specific friend
+export const loadFriendRecipes = async (friendId: string): Promise<Recipe[]> => {
+  try {
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    // Verify friendship exists
+    const { data: friendship } = await supabase
+      .from('friendships')
+      .select('*')
+      .eq('status', 'accepted')
+      .or(`and(user_id.eq.${user.id},friend_id.eq.${friendId}),and(user_id.eq.${friendId},friend_id.eq.${user.id})`)
+      .single();
+
+    if (!friendship) {
+      throw new Error('Not friends with this user');
+    }
+
+    const { data, error } = await supabase
+      .from(RECIPES_TABLE)
+      .select('*')
+      .eq('user_id', friendId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error loading friend recipes:', error);
+      throw new Error(`Database error: ${error.message}`);
+    }
+
+    if (!data) return [];
+
+    // Validate and transform all recipes
+    const validRecipes: Recipe[] = [];
+    for (const dbRecipe of data) {
+      try {
+        validRecipes.push(transformRecipeFromDB(dbRecipe));
+      } catch (error) {
+        console.warn('Skipping invalid recipe:', dbRecipe.id, error);
+      }
+    }
+
+    return validRecipes;
+  } catch (error) {
+    console.error('Error loading friend recipes:', error);
+    throw error;
+  }
+};
