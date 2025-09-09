@@ -8,9 +8,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies (will install Linux-compatible versions)
-RUN npm ci
-# Force install rollup native binaries for Linux
-RUN npm install @rollup/rollup-linux-x64-gnu --force
+RUN npm cache clean --force
+RUN npm install
 
 # Copy source code (excluding node_modules)
 COPY src/ ./src/

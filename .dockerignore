@@ -9,3 +9,5 @@ README.md
 coverage
 .sass-cache
 dist
+package-lock.json
+yarn.lock
