@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+# Language for review comments
+language: "en-US"
+
+# Set the tone of the review: "chill" (default) or "assertive"
+tone_instructions: "assertive"
+
+early_access: true
+
+reviews:
+  # "chill" (less noise) or "assertive" (more detailed/nitpicky)
+  profile: "chill"
+
+  # Automatically request changes if issues are found
+  request_changes_workflow: false
+
+  # Generate a high-level summary in the PR description
+  high_level_summary: true
+
+  # Placeholder for where the summary should be placed
+  high_level_summary_placeholder: "@coderabbitai summary"
+
+  # Generate a file-by-file walkthrough
+  high_level_summary_in_walkthrough: false
+
+  # Auto-generate a title for the PR
+  auto_title_placeholder: "@coderabbitai title"
+
+  # Generate a sequence diagram
+  sequence_diagrams: true
+
+  # Summarize changed files
+  changed_files_summary: true
+
+  # Assess linked issues (e.g., Jira/GitHub issues)
+  assess_linked_issues: false
+
+  # Define specific, custom instructions for different folders/files
+  path_instructions:
+    - path: "**/backend/**"
+      instructions: |
+        Focus on SQL injection, performance, and API best practices.
+    - path: "**/frontend/**"
+      instructions: |
+        Focus on consistency of font style and theme usage.
+
+  poem: true
