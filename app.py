@@ -31,7 +31,7 @@ def parse():
         html = urlopen(req).read().decode("utf-8")
         scraper = scrape_html(html, org_url=url)
         recipe_data = scraper.to_json()
-        recipe_data['success'] = True  # Add success field
+        recipe_data['success'] = True  
         
         app.logger.info(f"Successfully parsed recipe: {recipe_data.get('title', 'No title')}")
         
